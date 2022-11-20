@@ -10,7 +10,7 @@ public class FileScanner {
         // create path to input of correct day and type
         String path = String.format("%s/day%02d.txt", useTestInput ? "_test-input" : "_puzzle-input", dayNumber);
 
-        // collect every line of puzzel input
+        // collect every line of puzzle input
         Scanner puzzleScanner = new Scanner(new File(path));
         ArrayList<String> allInputLines = new ArrayList<>();
         while (puzzleScanner.hasNextLine()) {
