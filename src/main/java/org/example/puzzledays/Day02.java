@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Day02 extends PuzzleDay {
     public Day02() {
-        super(false, false);
+        super(false, false, true);
     }
 
     @Override

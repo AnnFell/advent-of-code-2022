@@ -7,9 +7,10 @@ public abstract class PuzzleDay {
     private boolean partTwoSolved;
     private boolean useTestInput;
 
-    protected PuzzleDay(boolean isPartOneSolved, boolean isPartTwoSolved){
+    protected PuzzleDay(boolean isPartOneSolved, boolean isPartTwoSolved, boolean useTestInput){
         this.partOneSolved = isPartOneSolved;
         this.partTwoSolved = isPartTwoSolved;
+        this.useTestInput  = useTestInput;
     }
 
     public boolean isPartOneSolved() {
@@ -22,10 +23,6 @@ public abstract class PuzzleDay {
 
     public boolean getUseTestInput() {
         return useTestInput;
-    }
-
-    protected void setUseTestInput(boolean useTestInput) {
-        this.useTestInput = useTestInput;
     }
 
     public abstract long getSolutionPartOne(ArrayList<String> input);

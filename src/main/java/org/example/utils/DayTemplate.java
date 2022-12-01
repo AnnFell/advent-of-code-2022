@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class DayTemplate extends PuzzleDay {
     public DayTemplate() {
-        super(false, false);
+        super(false, false, true);
     }
 
     @Override

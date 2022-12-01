@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
-        boolean runAll = true;
+        boolean runAll = false;
         int workingOnDay = 1;
 
         ArrayList<PuzzleDay> puzzleDays = new ArrayList<>();
