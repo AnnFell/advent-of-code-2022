@@ -18,10 +18,9 @@ public class Main {
     private static List<Class<? extends PuzzleDay>> puzzleDays;
 
     public static void main(String[] args) throws FileNotFoundException {
-        boolean runAll = true;
-        int workingOnDay = 2;
-
         puzzleDays = findAllClassesUsingReflectionsLibrary();
+        int workingOnDay = puzzleDays.size();
+        boolean runAll = true;
 
         if (runAll) {
             printAllResults();
