@@ -10,11 +10,12 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         boolean runAll = false;
-        int workingOnDay = 1;
+        int workingOnDay = 2;
 
         ArrayList<PuzzleDay> puzzleDays = new ArrayList<>();
         puzzleDays.add(new Day01());
         puzzleDays.add(new Day02());
+        puzzleDays.add(new Day03());
 
         if (runAll) {
             printAllResults(puzzleDays);
