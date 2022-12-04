@@ -81,6 +81,8 @@ public class Main {
 
     private static List<Class<? extends PuzzleDay>> findAllClassesUsingReflectionsLibrary() {
         Reflections reflections = new Reflections("org.example.puzzledays", new SubTypesScanner(false));
-        return new ArrayList<>(reflections.getSubTypesOf(PuzzleDay.class));
+        List<Class<? extends PuzzleDay>> allClasses = new ArrayList<>(reflections.getSubTypesOf(PuzzleDay.class));
+        allClasses.sort((a, b)-> a.getName().compareToIgnoreCase(b.getName()));
+        return allClasses;
     }
 }
