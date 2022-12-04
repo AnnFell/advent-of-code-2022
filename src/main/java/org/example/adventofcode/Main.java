@@ -48,18 +48,19 @@ public class Main {
             ArrayList<String> puzzleInput = FileScanner.getPuzzleInput(workingDay, currentDay.getUseTestInput());
 
             if (currentDay.isPartOneSolved()) {
-                printResult("one", currentDay.getSolutionPartOne(puzzleInput));
+                getResult("one", currentDay, puzzleInput);
             }
 
             if (currentDay.isPartTwoSolved()) {
-                printResult("two", currentDay.getSolutionPartTwo(puzzleInput));
+                getResult("two", currentDay, puzzleInput);
             }
             System.out.println("------");
         }
     }
 
-    private static void printResult(String part, Long solution) {
+    private static void getResult(String part, PuzzleDay currentDay, ArrayList<String> puzzleInput) {
         long startTime = System.nanoTime();
+        long solution =  currentDay.getSolutionPartOne(puzzleInput);
         System.out.printf("Part %s: " +
                 "the solution is %d%n", part, solution);
         long elapsedTime = System.nanoTime() - startTime;
