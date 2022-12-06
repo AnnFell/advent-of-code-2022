@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         puzzleDays = findAllClassesUsingReflectionsLibrary();
         int workingOnDay = puzzleDays.size();
-        boolean runAll = true;
+        boolean runAll = false;
 
         if (runAll) {
             printAllResults();
@@ -48,19 +48,24 @@ public class Main {
             ArrayList<String> puzzleInput = FileScanner.getPuzzleInput(workingDay, currentDay.getUseTestInput());
 
             if (currentDay.isPartOneSolved()) {
-                getResult("one", currentDay, puzzleInput);
+                getResult(1, currentDay, puzzleInput);
             }
 
             if (currentDay.isPartTwoSolved()) {
-                getResult("two", currentDay, puzzleInput);
+                getResult(2, currentDay, puzzleInput);
             }
             System.out.println("------");
         }
     }
 
-    private static void getResult(String part, PuzzleDay currentDay, ArrayList<String> puzzleInput) {
+    private static void getResult(int part, PuzzleDay currentDay, ArrayList<String> puzzleInput) {
         long startTime = System.nanoTime();
-        long solution =  currentDay.getSolutionPartOne(puzzleInput);
+        long solution;
+        if(part == 1){
+            solution =  currentDay.getSolutionPartOne(puzzleInput);
+        } else {
+            solution =  currentDay.getSolutionPartTwo(puzzleInput);
+        }
         System.out.printf("Part %s: " +
                 "the solution is %d%n", part, solution);
         long elapsedTime = System.nanoTime() - startTime;
