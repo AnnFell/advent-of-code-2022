@@ -26,7 +26,7 @@ public class Day08 extends PuzzleDay {
         // check rows
         for (int y = 0; y < mapSizeY; y++) {
 
-            @SuppressWarnings("DuplicatedCode") List<Integer> row = new ArrayList<>();
+            List<Integer> row = new ArrayList<>();
             for (int x = 0; x < mapSizeX; x++) {
                 int currentPos = (y * mapSizeX) + x;
                 row.add(map.get(currentPos));
@@ -39,14 +39,14 @@ public class Day08 extends PuzzleDay {
         // check columns
         for (int x = 0; x < mapSizeX; x++) {
 
-            @SuppressWarnings("DuplicatedCode") List<Integer> column = new ArrayList<>();
+            List<Integer> column = new ArrayList<>();
             for (int y = 0; y < mapSizeY; y++) {
                 int currentPos = (y * mapSizeX) + x;
                 column.add(map.get(currentPos));
             }
 
             List<Integer> foundTrees = checkTreeline(column);
-            markColumnsInRow(foundTrees, x);
+            markTreesInColumn(foundTrees, x);
         }
 
         // count al negative numbers in map
@@ -68,7 +68,7 @@ public class Day08 extends PuzzleDay {
         }
     }
 
-    private void markColumnsInRow(List<Integer> yIndexes, int xIndex) {
+    private void markTreesInColumn(List<Integer> yIndexes, int xIndex) {
         for (Integer y : yIndexes) {
             int mapIndex = (y * mapSizeX) + xIndex;
             if (map.get(mapIndex) > 0) {
@@ -95,18 +95,17 @@ public class Day08 extends PuzzleDay {
 
         // find visible trees from the right side
         int valueRightHighest = -1;
-        int indexRightHighest = -1;
         for (int i = line.size() -1; i > indexLeftHighest; i--) {
             if (line.get(i) > valueRightHighest) {
                 valueRightHighest = line.get(i);
-                indexRightHighest = i;
-                foundTrees.add(indexRightHighest);
+                foundTrees.add(i);
             }
         }
         return foundTrees;
     }
 
     private void parseInput(List<String> input) {
+        map.clear();
         for (String line : input) {
             // map to one higher because negative flag does not work for 0 values
             List<Integer> splitLine = Arrays.stream(line.split("")).mapToInt(Integer::parseInt).map(x -> x + 1).boxed().toList();
