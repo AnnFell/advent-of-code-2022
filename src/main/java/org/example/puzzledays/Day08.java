@@ -11,7 +11,7 @@ public class Day08 extends PuzzleDay {
     int mapSizeY;
 
     public Day08() {
-        super(true, true, true);
+        super(true, true, false);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class Day08 extends PuzzleDay {
         mapSizeX = input.get(0).length();
         mapSizeY = input.size();
 
-        printMap(map, mapSizeX, mapSizeY);
+        // printMap(map, mapSizeX, mapSizeY);
 
         // check rows
         for (int y = 0; y < mapSizeY; y++) {
@@ -50,12 +50,103 @@ public class Day08 extends PuzzleDay {
         }
 
         // count al negative numbers in map
-        return map.stream().filter(x -> x<0).count();
+        return map.stream().filter(x -> x < 0).count();
     }
 
     @Override
     public long getSolutionPartTwo(ArrayList<String> input) {
-        return 0;
+        parseInput(input);
+
+        List<Long> mapValues = new ArrayList<>();
+
+        // Get scenic value for each tree
+        for (int y = 0; y < mapSizeY; y++) {
+            for (int x = 0; x < mapSizeX; x++) {
+                int listIndex = giveListIndexOfMap(x, y);
+
+                int currentTreeHeight = map.get(listIndex);
+
+                long downValue = getScenicValue(x, y, currentTreeHeight, "down");
+                long upValue = getScenicValue(x, y, currentTreeHeight, "up");
+                long leftValue = getScenicValue(x, y, currentTreeHeight, "left");
+                long rightValue = getScenicValue(x, y, currentTreeHeight, "right");
+
+                long treeScenicValue = downValue * upValue * leftValue * rightValue;
+                mapValues.add(treeScenicValue);
+            }
+        }
+
+        // return scenic value of tree with the highest score
+        return mapValues.stream().mapToLong(x -> x).max().orElse(-1);
+    }
+
+    private long getScenicValue(int x, int y, int originalTreeHeight, String direction) {
+        long score = 0;
+
+        int newX = x;
+        int newY = y;
+        int index;
+
+        switch (direction) {
+            case "down" -> {
+                newY++;
+                index = giveListIndexOfMap(newX, newY);
+                while (newY >= 0 && newY < mapSizeY) {
+                    newY++;
+                    int tree = map.get(index);
+                    score++;
+                    index = giveListIndexOfMap(newX, newY);
+                    if (tree >= originalTreeHeight) {
+                        break;
+                    }
+                }
+            }
+            case "up" -> {
+                newY--;
+                index = giveListIndexOfMap(newX, newY);
+                while (newY >= 0 && newY < mapSizeY) {
+                    int tree = map.get(index);
+                    score++;
+                    newY--;
+                    index = giveListIndexOfMap(newX, newY);
+                    if (tree >= originalTreeHeight) {
+                        break;
+                    }
+                }
+            }
+            case "left" -> {
+                newX--;
+                index = giveListIndexOfMap(newX, newY);
+                while (newX >= 0 && newX < mapSizeX) {
+                    int tree = map.get(index);
+                    score++;
+                    newX--;
+                    index = giveListIndexOfMap(newX, newY);
+                    if (tree >= originalTreeHeight) {
+                        break;
+                    }
+                }
+            }
+            case "right" -> {
+                newX++;
+                index = giveListIndexOfMap(newX, newY);
+                while (newX >= 0 && newX < mapSizeX) {
+                    int tree = map.get(index);
+                    score++;
+                    newX++;
+                    index = giveListIndexOfMap(newX, newY);
+                    if (tree >= originalTreeHeight) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return score;
+    }
+
+    private int giveListIndexOfMap(int x, int y) {
+        return x + (y * mapSizeX);
     }
 
     private void markTreesInRow(List<Integer> xIndexes, int yIndex) {
@@ -95,7 +186,7 @@ public class Day08 extends PuzzleDay {
 
         // find visible trees from the right side
         int valueRightHighest = -1;
-        for (int i = line.size() -1; i > indexLeftHighest; i--) {
+        for (int i = line.size() - 1; i > indexLeftHighest; i--) {
             if (line.get(i) > valueRightHighest) {
                 valueRightHighest = line.get(i);
                 foundTrees.add(i);
@@ -117,7 +208,7 @@ public class Day08 extends PuzzleDay {
         System.out.println();
         for (int y = 0; y < mapSizeY; y++) {
             for (int x = 0; x < mapSizeX; x++) {
-                System.out.format("|%2d ", (map.get((y * mapSizeX) + x)-1));
+                System.out.format("|%2d ", (map.get((y * mapSizeX) + x) - 1));
             }
             System.out.println();
         }
