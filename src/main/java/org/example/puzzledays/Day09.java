@@ -3,22 +3,32 @@ package org.example.puzzledays;
 import org.example.utils.PuzzleDay;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 
 public class Day09 extends PuzzleDay {
-    String[][][] map;
+    String[][] map;
     int mapSizeX;
     int mapSizeY;
     int startX;
     int startY;
 
     public Day09() {
-        super(true, false, false);
+        super(true, true, false);
     }
 
     @Override
     public long getSolutionPartOne(ArrayList<String> input) {
-        // ------------ build the map ------------
+        buildMap(input);
+        return getSolution(2, false, input);
+    }
+
+    @Override
+    public long getSolutionPartTwo(ArrayList<String> input) {
+        buildMap(input);
+        return getSolution(10, false, input);
+    }
+
+    private void buildMap(ArrayList<String> input) {
         // find out map size and start position
         int xMax = 0;
         int xMin = 0;
@@ -27,8 +37,6 @@ public class Day09 extends PuzzleDay {
 
         int currX = 0;
         int currY = 0;
-
-        int layers = 1;
 
         for (String line : input) {
             String[] instruction = line.split(" ");
@@ -50,102 +58,82 @@ public class Day09 extends PuzzleDay {
         startX = Math.abs(xMin);
         startY = Math.abs(yMin);
 
-        System.out.println("X " + xMin + " " + xMax);
-        System.out.println("Y " + yMin + " " + yMax);
-        System.out.println("Map size X " + mapSizeX + " Y " + mapSizeY);
-        System.out.println("Start at X " + startX + " Y " + startY);
-
         // initialize empty map
-        map = new String[mapSizeY][mapSizeX][layers];
+        map = new String[mapSizeY][mapSizeX];
+    }
 
+    private long getSolution(int numberOfKnots, boolean printSteps, ArrayList<String> input) {
         // ------------ set start position ------------
-        HashSet<Integer> uniqueTailPositions = new HashSet<>();
-        int headX = startX;
-        int headY = startY;
+        if (printSteps) System.out.println("=== init ===");
+        List<Knot> allKnots = new ArrayList<>();
+        for (int i = 0; i < numberOfKnots; i++) {
+            if (i == 0) {
+                allKnots.add(new Knot(startX, startY, mapSizeX, null));
+            } else {
+                allKnots.add(new Knot(startX, startY, mapSizeX, allKnots.get(i - 1)));
+            }
+        }
 
-        int tailX = startX;
-        int tailY = startY;
+        if (printSteps) printMap(allKnots);
 
-        System.out.println("\n=== init ===\n");
-        uniqueTailPositions.add(tailX + (tailY * mapSizeX));
-//        printMap(startX, startY, tailX, tailY);
-
-        // ------------ move the head ------------
-        int lastHX;
-        int lastHY;
-
+        // ------------ move per instruction ------------
         for (String line : input) {
             String[] instruction = line.split(" ");
             int amount = Integer.parseInt(instruction[1]);
 
-            System.out.println("\n=== " + line + " ===\n");
+            if (printSteps) System.out.println("=== " + line + " ===");
 
             while (amount > 0) {
                 amount--;
-                lastHX = headX;
-                lastHY = headY;
 
+                // move first knot according to instructions
+                Knot firstKnot = allKnots.get(0);
+                int newX = firstKnot.getPositionX();
+                int newY = firstKnot.getPositionY();
                 switch (instruction[0]) {
-                    case "R" -> headX++;
-                    case "L" -> headX--;
-                    case "U" -> headY++;
-                    case "D" -> headY--;
+                    case "R" -> newX++;
+                    case "L" -> newX--;
+                    case "U" -> newY++;
+                    case "D" -> newY--;
                 }
+                firstKnot.setPosition(newX, newY);
 
                 // move tail when needed
-                int dx = tailX - headX;
-                int dy = tailY - headY;
-
-                if (Math.abs(dx) == 1 && Math.abs(dy) > 1
-                        || Math.abs(dx) > 1 && Math.abs(dy) == 1) {
-                    // Head moved diagonally out of reach, use last known head position
-                    tailX = lastHX;
-                    tailY = lastHY;
-                } else if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-                    if (dx < -1) {
-                        tailX++;
-                    }
-                    if (dx > 1) {
-                        tailX--;
-                    }
-                    if (dy < -1) {
-                        tailY++;
-                    }
-                    if (dy > 1) {
-                        tailY--;
+                for (int i = 0; i < allKnots.size(); i++) {
+                    if (i != 0) {
+                        allKnots.get(i).checkForMove();
                     }
                 }
 
-                // add to tail positions
-                uniqueTailPositions.add(tailX + (tailY * mapSizeX));
-
-//                printMap(headX, headY, tailX, tailY);
+                if (amount == 0) {
+                    if (printSteps) printMap(allKnots);
+                }
             }
 
         }
 
-        return uniqueTailPositions.size();
+        return allKnots.get(numberOfKnots - 1).getNumberOfVisitedPositions();
     }
 
-    private void printMap(int headX, int headY, int tailX, int tailY) {
+    private void printMap(List<Knot> allKnots) {
 
         for (int y = mapSizeY - 1; y >= 0; y--) {
             for (int x = 0; x < mapSizeX; x++) {
-                if (headX == x && headY == y) {
-                    System.out.print("H");
-                } else if (tailX == x && tailY == y) {
-                    System.out.print("T");
-                } else {
-                    System.out.print(".");
+                String point = ".";
+
+                for (int i = 0; i < allKnots.size(); i++) {
+                    Knot currKnot = allKnots.get(i);
+                    if (x == currKnot.getPositionX()
+                            && y == currKnot.getPositionY()) {
+                        point = "" + i;
+                        break;
+                    }
                 }
+
+                System.out.print(point);
             }
             System.out.print("\n");
         }
         System.out.println();
-    }
-
-    @Override
-    public long getSolutionPartTwo(ArrayList<String> input) {
-        return 0;
     }
 }

@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         puzzleDays = findAllClassesUsingReflectionsLibrary();
         int workingOnDay = puzzleDays.size();
-        boolean runAll = false;
+        boolean runAll = true; // run all or only run the last available puzzle day
 
         if (runAll) {
             printAllResults();
@@ -61,10 +61,10 @@ public class Main {
     private static void getResult(int part, PuzzleDay currentDay, ArrayList<String> puzzleInput) {
         long startTime = System.nanoTime();
         long solution;
-        if(part == 1){
-            solution =  currentDay.getSolutionPartOne(puzzleInput);
+        if (part == 1) {
+            solution = currentDay.getSolutionPartOne(puzzleInput);
         } else {
-            solution =  currentDay.getSolutionPartTwo(puzzleInput);
+            solution = currentDay.getSolutionPartTwo(puzzleInput);
         }
         System.out.printf("Part %s: " +
                 "the solution is %d%n", part, solution);
@@ -88,7 +88,7 @@ public class Main {
     private static List<Class<? extends PuzzleDay>> findAllClassesUsingReflectionsLibrary() {
         Reflections reflections = new Reflections("org.example.puzzledays", new SubTypesScanner(false));
         List<Class<? extends PuzzleDay>> allClasses = new ArrayList<>(reflections.getSubTypesOf(PuzzleDay.class));
-        allClasses.sort((a, b)-> a.getName().compareToIgnoreCase(b.getName()));
+        allClasses.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
         return allClasses;
     }
 }
