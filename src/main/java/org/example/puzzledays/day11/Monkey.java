@@ -11,8 +11,9 @@ public class Monkey {
     int throwTrue;
     int throwFalse;
     int inspections;
+    long roundReset;
 
-    public Monkey(String[] items, String operationType, int operationValue, int testValue, int throwTrue, int throwFalse) {
+    public Monkey(String[] items, String operationType, int operationValue, int testValue, int throwTrue, int throwFalse, long roundReset) {
         for (String item : items) {
             this.items.add(Integer.parseInt(item));
         }
@@ -21,6 +22,7 @@ public class Monkey {
         this.testValue = testValue;
         this.throwTrue = throwTrue;
         this.throwFalse = throwFalse;
+        this.roundReset = roundReset;
     }
 
     public int[] inspection(int itemIndex) {
@@ -33,7 +35,12 @@ public class Monkey {
         } else {
             newWorryLevel = worryLevel * workingValue;
         }
-        newWorryLevel = newWorryLevel / 3;
+
+        if (roundReset == 0) {
+            newWorryLevel = newWorryLevel / 3;
+        } else {
+            newWorryLevel %= roundReset;
+        }
 
         int[] throwTargetAndItem = new int[2];
         if (newWorryLevel % testValue == 0) {
