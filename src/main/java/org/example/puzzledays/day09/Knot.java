@@ -1,4 +1,4 @@
-package org.example.puzzledays;
+package org.example.puzzledays.day09;
 
 import java.util.HashSet;
 

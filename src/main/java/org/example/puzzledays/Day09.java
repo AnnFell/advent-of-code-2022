@@ -1,5 +1,6 @@
 package org.example.puzzledays;
 
+import org.example.puzzledays.day09.Knot;
 import org.example.utils.PuzzleDay;
 
 import java.util.ArrayList;

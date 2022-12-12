@@ -12,7 +12,6 @@ public class Day06 extends PuzzleDay {
 
     @Override
     public long getSolutionPartOne(ArrayList<String> input) {
-        System.out.println(" in day 6");
         int indexOfFirstPacketStart = -1;
 
         String[] bufferArray = input.get(0).split("");
