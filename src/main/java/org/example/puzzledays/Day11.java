@@ -4,6 +4,7 @@ import org.example.puzzledays.day11.Monkey;
 import org.example.utils.PuzzleDay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Day11 extends PuzzleDay {
@@ -25,7 +26,6 @@ public class Day11 extends PuzzleDay {
         } else {
             filter = 13 * 7 * 19 * 2 * 5 * 3 * 11 * 17;
         }
-        System.out.println("Filter is " + filter);
         Monkey[] monkeys = parseInput(input, filter);
         return runSolution(monkeys, 10000);
     }
@@ -39,29 +39,16 @@ public class Day11 extends PuzzleDay {
                 }
                 monkey.clearItemsAfterRound();
             }
-            if (i == 1 || i == 20 || i == 1000 || i == 2000 || i == 3000 || i == 4000
-                    || i == 5000 || i == 6000 || i == 7000 || i == 8000 || i == 9000 || i == 10000) {
-                System.out.println("After round " + i);
-                for (int x = 0; x < monkeys.length; x++) {
-                    System.out.println("Monkey " + x + ": " + monkeys[x].getInspections());
-//                    if(i<=20){
-//                        System.out.println("Monkey " + x + ": " + monkeys[x].getItems());
-//                    }
-                }
-            }
         }
 
-        int highest = 0;
-        int secondHighest = 0;
+        List<Long> inspectionAmount = new ArrayList<>();
         for (Monkey monkey : monkeys) {
-            int inspectionAmount = monkey.getInspections();
-            if (highest < inspectionAmount) {
-                secondHighest = highest;
-                highest = inspectionAmount;
-            }
-        }
+            inspectionAmount.add((long) monkey.getInspections());
 
-        return (long) highest * secondHighest;
+        }
+        Collections.sort(inspectionAmount);
+        Collections.reverse(inspectionAmount);
+        return inspectionAmount.get(0)*inspectionAmount.get(1);
     }
 
     private Monkey[] parseInput(ArrayList<String> input, long filter) {
