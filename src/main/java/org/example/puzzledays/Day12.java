@@ -1,6 +1,7 @@
 package org.example.puzzledays;
 
 import org.example.puzzledays.day12.Point;
+import org.example.puzzledays.day12.Route;
 import org.example.utils.PuzzleDay;
 
 import java.util.ArrayList;
@@ -22,97 +23,95 @@ public class Day12 extends PuzzleDay {
     Point end;
 
     public Day12() {
-        super(true, false, true);
+        super(true, false, false);
     }
 
     @Override
     public long getSolutionPartOne(ArrayList<String> input) {
         parseMapToList(input);
-        printMapList(null);
+//        printMapList(null);
 
         // starting route
+        lookForShortestPath(null);
 
-        lookForShortestPath(null, null);
-
-        for (List<Point> route : foundRoutes) {
-            if (route.size() == smallestFoundRoute) {
-                System.out.println(route.size());
-                System.out.println(route);
-            }
-        }
         for (int i = 0; i < mapX * mapY; i++) {
             // routes copy
-            List<List<Point>> currRoutes = new ArrayList<>(routes);
-            for (List<Point> route : currRoutes) {
-                lookForShortestPath(route, route.get(route.size() - 1));
+            List<Route> currRoutes = new ArrayList<>(routes);
+            for (Route route : currRoutes) {
+                lookForShortestPath(route);
+                if (foundRoutes.size() > 1) {
+                    break;
+                }
+            }
+            if (foundRoutes.size() > 1) {
+                break;
             }
         }
-        return 0;
+
+
+        for (Route route : foundRoutes) {
+            if (route.getLength() == smallestFoundRoute) {
+                System.out.println(route.getLength());
+            }
+        }
+        return smallestFoundRoute;
     }
 
-    List<List<Point>> routes = new ArrayList<>();
-    List<List<Point>> foundRoutes = new ArrayList<>();
+    List<Route> routes = new ArrayList<>();
+    List<Route> foundRoutes = new ArrayList<>();
     long smallestFoundRoute = Integer.MAX_VALUE;
 
-    private void lookForShortestPath(List<Point> route, Point atPoint) {
+    private void lookForShortestPath(Route route) {
         // begin at start
-        if (atPoint == null) {
-            atPoint = start;
-        }
         if (route == null) {
-            route = new ArrayList<>();
-            route.add(atPoint);
+            route = new Route(start.getX(), start.getY(), mapX, 9);
             routes.add(route);
         }
 //        System.out.println("-----------------------------------------------");
 //        printMapList(route);
 //        System.out.println("== " + routes.indexOf(route) + " at " + atPoint);
 
-        List<Point> neighboursToVisit = getNeighboursToVisit(route, atPoint);
+        List<Point> neighboursToVisit = getNeighboursToVisit(route);
 //        System.out.println(neighboursToVisit);
 
         // if route is not a dead end:
         if (!neighboursToVisit.isEmpty()) {
-            for (int i = 0; i < neighboursToVisit.size(); i++) {
-                Point neighbour = neighboursToVisit.get(i);
-
+            for (Point neighbour : neighboursToVisit) {
                 // check for stop conditions:
                 // stop when the end, -1, is reached
                 if (neighbour.getValue() == 36) {
-                    route.add(neighbour);
+                    route.addVisited(neighbour.getX(), neighbour.getY(), 36);
                     foundRoutes.add(route);
                     routes.remove(route);
+
                     System.out.println("found one!");
-                    System.out.println(route.size());
+                    System.out.println(route.getLength());
                     printMapList(route);
-                    if (smallestFoundRoute > route.size()) {
-                        smallestFoundRoute = route.size();
+
+                    if (smallestFoundRoute > route.getLength()) {
+                        smallestFoundRoute = route.getLength();
                     }
                     return;
                 }
 
                 // optimize: stop searching if there is already a complete route that is shorter than the current one
-                if (route.size() + 1 > smallestFoundRoute) {
+                if (route.getLength() > smallestFoundRoute) {
+                    routes.remove(route);
                     return;
                 }
 
                 // continue searching. If route splits, start a new route
-                if (i == 0) {
-                    route.add(neighboursToVisit.get(i));
-                    // do not immediately go in depth!
-                } else {
-                    List<Point> newRoute = new ArrayList<>(route);
-                    newRoute.add(neighbour);
-                    routes.add(newRoute);
-                }
+                Route newRoute = new Route(neighbour.getX(), neighbour.getY(), mapX, neighbour.getValue(), route.getVisitedIds());
+                routes.add(newRoute);
             }
         }
+        routes.remove(route);
     }
 
-    private List<Point> getNeighboursToVisit(List<Point> routeSoFar, Point currPoint) {
-        int currX = currPoint.getX();
-        int currY = currPoint.getY();
-        int currValue = currPoint.getValue();
+    private List<Point> getNeighboursToVisit(Route routeSoFar) {
+        int currX = routeSoFar.getLastX();
+        int currY = routeSoFar.getLastY();
+        int currValue = routeSoFar.getCurrValue();
 
         // move up, down, left or right
         Point down = getPointWithIndex(currX, currY + 1);
@@ -128,7 +127,8 @@ public class Day12 extends PuzzleDay {
         for (Object x : check) {
             if (x != null) {
                 Point point = (Point) x;
-                if ((!routeSoFar.contains(x)
+                Integer id = point.getY() * mapX + point.getX();
+                if ((!routeSoFar.getVisitedIds().contains(id)
                         && point.getValue() - currValue <= 1)) {
                     neighbours.add(point);
                 }
@@ -151,13 +151,13 @@ public class Day12 extends PuzzleDay {
         return 0;
     }
 
-    private void printMapList(List<Point> highlight) {
+    private void printMapList(Route highlight) {
         for (int i = 0; i < mapList.size(); i++) {
             if (i % mapX == 0) {
                 System.out.println();
             }
             Point point = mapList.get(i);
-            if (highlight != null && highlight.contains(point)) {
+            if (highlight != null && highlight.hasVisited(point.getX(), point.getY())) {
                 System.out.format("\u001B[42m %2d \033[0m", point.getValue());
             } else {
                 System.out.format(" %d ", point.getValue());
@@ -177,13 +177,13 @@ public class Day12 extends PuzzleDay {
                 int value = Character.getNumericValue(data);
 
                 if (data == 'S') {
-                    start = new Point(x, y, 9);
+                    start = new Point(x, y, 9, mapX);
                     point = start;
                 } else if (data == 'E') {
-                    end = new Point(x, y, 36);
+                    end = new Point(x, y, 36, mapX);
                     point = end;
                 } else {
-                    point = new Point(x, y, value);
+                    point = new Point(x, y, value, mapX);
                 }
                 mapList.add(point);
             }
