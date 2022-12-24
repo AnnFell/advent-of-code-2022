@@ -19,13 +19,14 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         puzzleDays = findAllClassesUsingReflectionsLibrary();
-        int workingOnDay = puzzleDays.size();
-        boolean runAll = true; // run all or only run the last available puzzle day
+        int numberOfDays = puzzleDays.size();
+        boolean runAll = false; // run all puzzle days
+        int workingOnDay = 0; // run last available day if 0, otherwise run specified day
 
         if (runAll) {
             printAllResults();
         } else {
-            runSolutionsOfDay(workingOnDay);
+            runSolutionsOfDay(workingOnDay == 0 ? numberOfDays : workingOnDay);
         }
     }
 
