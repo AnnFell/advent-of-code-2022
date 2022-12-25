@@ -21,7 +21,7 @@ public class Main {
         puzzleDays = findAllClassesUsingReflectionsLibrary();
         int numberOfDays = puzzleDays.size();
         boolean runAll = false; // run all puzzle days
-        int workingOnDay = 0; // run last available day if 0, otherwise run specified day
+        int workingOnDay = 22; // run last available day if 0, otherwise run specified day
 
         if (runAll) {
             printAllResults();
